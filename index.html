@@ -56,7 +56,7 @@
         <div class="field">
           <label class="label">Amount:</label>
           <div class="control has-icons-right">
-            <input type="text" name="tipInput" placeholder="0.1" id="tipInput" class="input" />
+            <input type="text" name="tipInput" value="0.1" placeholder="0.1" id="tipInput" class="input" />
           </div>
         </div>
         <div class="field">
@@ -97,6 +97,8 @@
     }
     appUrl = document.getElementById('appUrlInput').value
     amount = document.getElementById('tipInput').value
+
+    renderMoneybutton(address, amount, type, appName, appUrl)
   }
   var renderRanking = function(arrayObjects) {
     var len = arrayObjects.length;
@@ -257,7 +259,7 @@
       getRankings()
     })
 
-    // track input changes
+    // track type changes
     document.getElementById('typeInput').addEventListener("change", function() {
       if (document.getElementById('typeInput').value === "default") {
         document.getElementById('appNameInputBlock').style.display = "none";
@@ -270,11 +272,19 @@
         document.getElementById('appNameInputBlock').style.display = "block";
         document.getElementById('appNameInput').placeholder = "twetch";
       }
+      setVars()
     })
-    // track input changes
+    // track app name changes
+    document.getElementById('appNameInput').addEventListener("input", function() {
+      setVars()
+    })
+    // track app url changes
+    document.getElementById('appUrlInput').addEventListener("input", function() {
+      setVars()
+    })
+    // track tip changes
     document.getElementById('tipInput').addEventListener("input", function() {
       setVars()
-      renderMoneybutton(address, amount, type, appName, appUrl)
     })
   })
 </script>
