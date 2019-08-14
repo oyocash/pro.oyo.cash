@@ -29,7 +29,7 @@ Your bid for the following items:
 * Default link for base OP_RETURN protocols (s1) for unclaimed apps
 * Default link for base protocol transactions without identifiable app
 
-**Note:** Hex values below or equal to 8 chars will be first interpreted with "h1", then with "s1", if "h1" is
+**Note:** Hex values below or equal to 8 chars will be first interpreted with "h1". Otherwise its interpreted with "s1"
 
 ### mapApp
 Your bid for the following item:
