@@ -7,6 +7,8 @@ var getOyoProQuery = function(address, type, appName, appUrl, beginTimestamp, en
     }, {
       "out.s3": appName
     }, {
+      "out.s4": { "$regex" : "https?:\\/\\/.*\\{tx_hash\\}.*" }
+    }, {
       "out.e.a": address
     }, {
       "$or": [{
