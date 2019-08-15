@@ -52,7 +52,7 @@
         <div class="field">
           <label class="label">Amount:</label>
           <div class="control has-icons-right">
-            <input type="text" name="tipInput" value="0.1" placeholder="0.1" id="tipInput" class="input" />
+            <input type="text" name="tipInput" value="0.02" placeholder="0.02" id="tipInput" class="input" />
           </div>
         </div>
         <div class="field">
@@ -171,6 +171,9 @@
       disabled = true
     } else if (!txHashInUrl(appUrl)) {
       label = "{tx_hash} is missing"
+      disabled = true
+    } else if (type !== "default" && appName === "") {
+      label = "Enter app name"
       disabled = true
     }
     var opReturnScript = bsv.Script.buildDataOut([address, type, appName, appUrl]).toASM()
