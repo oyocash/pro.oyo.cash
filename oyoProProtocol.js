@@ -1,26 +1,16 @@
 var getOyoProQuery = function(address, type, appName, appUrl, beginTimestamp, endTimestamp) {
-  var query = {
-    "$and": [{
-      "out.s1": address
-    }, {
-      "out.s2": type
-    }, {
-      "out.s3": appName
-    }, {
-      "out.s4": { "$regex" : "https?:\\/\\/.*\\{tx_hash\\}.*" }
-    }, {
-      "out.e.a": address
-    }, {
-      "$or": [{
-        "blk.t": {
-              "$gte": beginTimestamp,
-              "$lte": endTimestamp
-            }
-        },
-        {"blk": null}
-      ]
-    }]
+  var query = {}
+  query['$and'] = []
+  query['$and'].push({"out.s1": address})
+  if (type !== "") {
+    query['$and'].push({"out.s2": type})
   }
+  if (appName !== "") {
+    query['$and'].push({"out.s3": appName})
+  }
+  query['$and'].push({"out.s4": { "$regex" : "https?:\\/\\/.*\\{tx_hash\\}.*" }})
+  query['$and'].push({"out.e.a": address})
+  query['$and'].push({"$or": [{"blk.t": {"$gte": beginTimestamp,"$lte": endTimestamp}}, {"blk": null}]})
   return query
 }
 

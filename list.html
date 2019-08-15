@@ -40,7 +40,7 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button is-primary" name="checkRanking" id="checkRanking">Check Ranking</button>
+            <button class="button is-primary" name="checkRanking"id="checkRanking">Check Ranking</button>
           </div>
         </div>
         <div class="field">
@@ -104,6 +104,7 @@
     text += "<ol>";
     for (var i = 0; i < len; i++) {
         var myObject = arrayObjects[i];
+
         text += "<li>";
         text += "<b>" + myObject.satoshis + "</b> "
         // hostname only
@@ -118,9 +119,7 @@
 
   var getRankings = function() {
     setVars()
-    if (type !== "default" && appName === "") {
-      return
-    }
+
     let endTimestamp = parseInt(new Date().getTime() / 1000)
     let beginTimestamp = parseInt(endTimestamp - window.period)
 
@@ -174,7 +173,7 @@
       disabled = true
     }
     var opReturnScript = bsv.Script.buildDataOut([address, type, appName, appUrl]).toASM()
-    moneyButton.render(moneybuttonDiv, {
+    moneyButton.render(div, {
       label: label,
       disabled: disabled,
       outputs: [
@@ -191,7 +190,8 @@
       }]
     })
   }
-  const moneybuttonDiv = document.getElementById('my-money-button')
+
+  const div = document.getElementById('my-money-button')
 
   document.addEventListener("DOMContentLoaded", function() {
     loadNav()
@@ -222,12 +222,6 @@
     document.getElementById('appNameInput').addEventListener("input", function() {
       setVars()
     })
-    document.getElementById('appNameInput').addEventListener("keyup", function(event) {
-      if (event.keyCode === 13) {
-       event.preventDefault();
-       document.getElementById("checkRanking").click();
-      }
-    });
     // track app url changes
     document.getElementById('appUrlInput').addEventListener("input", function() {
       setVars()
