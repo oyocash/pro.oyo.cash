@@ -166,7 +166,7 @@
     if (appUrl === "") {
       label = "Enter URL"
       disabled = true
-    } else if (!validURL(appUrl)) {
+    } else if (!validURL(appUrl.replace("{tx_hash}", "000000000000000000000000000000000000000000000000000000000000"))) {
       label = "Invalid URL"
       disabled = true
     } else if (!txHashInUrl(appUrl)) {
