@@ -1,18 +1,18 @@
 <html>
 <head>
-<script src="common.js"></script>
-<script src="oyoProProtocol.js"></script>
+<script src="/assets/js/common.js"></script>
+<script src="/assets/js/oyoProProtocol.js"></script>
 <script src="https://www.moneybutton.com/moneybutton.js"></script>
 <script type="text/javascript" src="https://unpkg.com/bsv@0.27.2/bsv.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
-
+<link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
 <div class="container is-fluid">
   <div id="nav"></div>
 
   <div class="tile is-ancestor">
-    <div class="tile is-parent is-8">
+    <div class="tile is-parent is-6">
       <article class="tile is-child box">
         <p class="title">Oyo Pro Listing</p>
         <p class="subtitle">Please read the <a href="https://bico.media/d58c8e4b7a95e177743ec780e4ddb6fb04fa3ccb3e938379372d2b786b150dc5">protocol description</a> before joining the rankings</p>
@@ -40,11 +40,11 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button is-primary" name="checkRanking"id="checkRanking">Check Ranking</button>
+            <button class="button is-primary" name="checkRanking" id="checkRanking">Check Ranking</button>
           </div>
         </div>
         <div class="field">
-          <label class="label">Transaction visualize (use {tx_hash} in place of the transaction hash):</label>
+          <label class="label">Transaction explorer (use {tx_hash} in place of the transaction hash):</label>
           <div class="control has-icons-right">
             <input type="text" name="appUrlInput" placeholder="https://whatsonchain.com/tx/{tx_hash}" id="appUrlInput" class="input" />
           </div>
@@ -52,7 +52,7 @@
         <div class="field">
           <label class="label">Amount:</label>
           <div class="control has-icons-right">
-            <input type="text" name="tipInput" value="0.1" placeholder="0.1" id="tipInput" class="input" />
+            <input type="text" name="tipInput" value="0.02" placeholder="0.02" id="tipInput" class="input" />
           </div>
         </div>
         <div class="field">
@@ -76,13 +76,14 @@
   </div>
 
 <script language='javascript'>
-  window.period = 30 * 24 * 60 * 60 // 30 days
-
-  let address = "149xadSKJcKdhgE4sMmcvx421nsGYwgkWo"
-  let type
-  let appName
-  let appUrl
+  let address = window.bitcomAddress
+  let type = getUrlVars()["type"] || "default"
+  let appName = getUrlVars()["appName"] || ""
+  let appUrl = getUrlVars()["appUrl"] || ""
   let amount
+  document.getElementById('typeInput').value = type
+  document.getElementById('appNameInput').value = appName
+  document.getElementById('appUrlInput').value = appUrl
 
   var setVars = function() {
     type = document.getElementById('typeInput').value
@@ -95,112 +96,30 @@
     appUrl = document.getElementById('appUrlInput').value
     amount = document.getElementById('tipInput').value
 
-    renderMoneybutton(address, amount, type, appName, appUrl)
+    renderMoneybutton(address, amount, type, appName, appUrl, 'my-money-button')
   }
-  var renderRanking = function(arrayObjects) {
-    var len = arrayObjects.length;
-    var text = "";
-
-    text += "<ol>";
-    for (var i = 0; i < len; i++) {
-        var myObject = arrayObjects[i];
-
-        text += "<li>";
-        text += "<b>" + myObject.satoshis + "</b> "
-        // hostname only
-        text += "<a href=\"" + extractHostname(myObject._id.url[0]) + "\">"
-        text += myObject._id.url[0]
-        text += "</a>";
-        text += "</li>";
-    }
-    text += "</ol>";
-    document.querySelector("#ranking").innerHTML = text
-  }
-
-  var getRankings = function() {
-    setVars()
-
-    let endTimestamp = parseInt(new Date().getTime() / 1000)
-    let beginTimestamp = parseInt(endTimestamp - window.period)
-
-    var query = getOyoProAggregatedQuery(address, type, appName, appUrl, beginTimestamp, endTimestamp);
-    var b64 = btoa(JSON.stringify(query, null, 2));
-
-    var url = "https://neongenesis.bitdb.network/q/1HcBPzWoKDL2FhCMbocQmLuFTYsiD73u1j/" + b64;
-    var header = { headers: { key: "1Ma7jy7deP3WvBqD8PwGqrZkAh4BBsP758" } };
-    fetch(url, header).then(function(res) {
-      return res.json()
-    }).then(function(res) {
-        if (res.c !== undefined || res.u !== undefined) {
-          let items = []
-          if (res.c !== undefined) {
-            items = items.concat(res.c)
-          }
-          if (res.u !== undefined) {
-            for (let i = 0; i < res.u.length; ++i) {
-              let added = 0
-              for (let j = 0; j < items.length; ++j) {
-                if (JSON.stringify(res.u[i]._id) === JSON.stringify(items[j]._id)) {
-                  items[j].satoshis += res.u[i].satoshis
-                  added = 1
-                }
-              }
-              if (added === 0) {
-                items = items.concat(res.u[i])
-                added = 1
-              }
-            }
-          }
-          renderRanking(items)
-        }
-    })
-
-    document.getElementById("type").innerHTML = type + ": ";
-    document.getElementById("appName").innerHTML = appName;
-  }
-
-  var renderMoneybutton = function(address, amount, type, appName, appUrl) {
-    var disabled = false
-    var label = "Bid"
-    if (appUrl === "") {
-      label = "Enter URL"
-      disabled = true
-    } else if (!validURL(appUrl)) {
-      label = "Invalid URL"
-      disabled = true
-    } else if (!txHashInUrl(appUrl)) {
-      label = "{tx_hash} is missing"
-      disabled = true
-    }
-    var opReturnScript = bsv.Script.buildDataOut([address, type, appName, appUrl]).toASM()
-    moneyButton.render(div, {
-      label: label,
-      disabled: disabled,
-      outputs: [
-      {
-        type: 'tip',
-        to: address,
-        currency: "USD",
-        amount: amount
-      }, {
-        type: 'SCRIPT',
-        script: opReturnScript,
-        amount: '0',
-        currency: 'BSV'
-      }]
-    })
-  }
-
-  const div = document.getElementById('my-money-button')
 
   document.addEventListener("DOMContentLoaded", function() {
     loadNav()
+
+    let endTimestamp = parseInt(new Date().getTime() / 1000)
+    let beginTimestamp = parseInt(endTimestamp - window.rankingPeriod)
     // initiate ranking on load
-    getRankings()
+    setVars()
+    getRankings(address, type, appName, appUrl, beginTimestamp, endTimestamp).then(function(items) {
+      renderRankingUrls(type, items, "ranking")
+      document.getElementById("type").innerHTML = type + ": ";
+      document.getElementById("appName").innerHTML = appName;
+    })
 
     // Check ranking clicked
     document.getElementById('checkRanking').addEventListener("click", function() {
-      getRankings()
+      setVars()
+      getRankings(address, type, appName, appUrl, beginTimestamp, endTimestamp).then(function(items) {
+        renderRankingUrls(type, items, "ranking")
+        document.getElementById("type").innerHTML = type + ": ";
+        document.getElementById("appName").innerHTML = appName;
+      })
     })
 
     // track type changes
@@ -222,6 +141,12 @@
     document.getElementById('appNameInput').addEventListener("input", function() {
       setVars()
     })
+    document.getElementById('appNameInput').addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+       event.preventDefault();
+       document.getElementById("checkRanking").click();
+      }
+    });
     // track app url changes
     document.getElementById('appUrlInput').addEventListener("input", function() {
       setVars()

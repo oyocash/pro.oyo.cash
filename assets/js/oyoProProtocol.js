@@ -72,3 +72,60 @@ var getOyoProAggregatedQuery = function(address, type, appName, appUrl, beginTim
   }
   return query
 }
+var getOyoProListByType = function(address, type, beginTimestamp, endTimestamp) {
+  var query = {
+    "v": 3,
+    "q": {
+      "aggregate": [{
+        "$match": getOyoProQuery(address, type, "", "", beginTimestamp, endTimestamp)
+      }, {
+        '$project': {
+          "out.s3": 1,
+          'satoshis': {
+            '$cond': {
+              'if': {
+                '$eq': [{'$arrayElemAt': ['$out.e.a', 0]}, address]
+              },
+              'then': {
+                '$arrayElemAt': ['$out.e.v', 0]
+              },
+              'else': {
+                '$cond': {
+                  'if': {
+                    '$eq': [{'$arrayElemAt': ['$out.e.a', 1]}, address]
+                  },
+                  'then': {
+                    '$arrayElemAt': ['$out.e.v', 1]
+                  },
+                  'else': {
+                    '$cond': {
+                      'if': {
+                        '$eq': [{'$arrayElemAt': ['$out.e.a', 2]}, address]
+                      },
+                      'then': {
+                        '$arrayElemAt': ['$out.e.v', 2]
+                      },
+                      'else': 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, {
+        "$group": {
+            "_id": {
+              "name": "$out.s3"
+            },
+            "satoshis": {
+              "$sum": "$satoshis"
+            }
+        }
+      }],
+      "limit": 10000,
+      "sort": {"satoshis": -1}
+    }
+  }
+  return query
+}

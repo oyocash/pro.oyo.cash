@@ -1,6 +1,6 @@
 # Oyo internal link protocol
 
-Oyo internal link protocol is a Bitcoin OP_RETURN protocol for creating list of internal transaction visualizers.
+Oyo internal link protocol is a Bitcoin OP_RETURN protocol for creating list of internal transaction explorers.
 
 OP_FALSE OP_RETURN
 1848HtHNDpDX6Yiw5j6KP8x9k84m3pGg9r
@@ -8,7 +8,7 @@ type
 appName
 appUrl (replace the transaction hash with {tx_hash})
 
-Each visualizer is weighted by accumulated satoshis amount sent to 1848HtHNDpDX6Yiw5j6KP8x9k84m3pGg9r for the last 30 days.
+Each transaction explorer is weighted by accumulated satoshis amount sent to 1848HtHNDpDX6Yiw5j6KP8x9k84m3pGg9r for the last 30 days.
 
 ### Note:
 This protocol is used only for internal Bitcoin links. For links outside of Bitcoin - use Oyo External Link Protocol

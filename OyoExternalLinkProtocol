@@ -1,6 +1,6 @@
 # Oyo external link protocol
 
-Oyo extermal link protocol is a Bitcoin OP_RETURN protocol for creating list of external transaction visualizers.
+Oyo extermal link protocol is a Bitcoin OP_RETURN protocol for creating list of external transaction explorers.
 
 OP_FALSE OP_RETURN
 149xadSKJcKdhgE4sMmcvx421nsGYwgkWo
@@ -8,7 +8,7 @@ type
 appName
 appUrl (replace the transaction hash with {tx_hash})
 
-Each visualizer is weighted by accumulated satoshis amount sent to 149xadSKJcKdhgE4sMmcvx421nsGYwgkWo for the last 30 days.
+Each transaction explorer is weighted by accumulated satoshis amount sent to 149xadSKJcKdhgE4sMmcvx421nsGYwgkWo for the last 30 days.
 
 ### Note:
 This protocol is used only for external Bitcoin links. For links inside Bitcoin - use Oyo Internal Link Protocol
