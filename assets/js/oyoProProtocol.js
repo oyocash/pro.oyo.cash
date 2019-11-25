@@ -14,6 +14,32 @@ var getOyoProQuery = function(address, type, appName, appUrl, beginTimestamp, en
   return query
 }
 
+
+var getOyoProAggregatedQueryListAll = function(address, type, appName, appUrl, beginTimestamp, endTimestamp) {
+  var query = {
+    "v": 3,
+    "q": {
+      "aggregate": [{
+        "$match": getOyoProQuery(address, type, appName, appUrl, beginTimestamp, endTimestamp)
+      }, {
+        '$project': {
+          "out.s3":1, "out.s4": 1
+        }
+      }, {
+        "$group": {
+            "_id": {
+              "name": "$out.s3",
+              "url": "$out.s4"
+            }
+        }
+      }],
+      "limit": 10000
+    }
+  }
+  return query
+}
+
+
 var getOyoProAggregatedQuery = function(address, type, appName, appUrl, beginTimestamp, endTimestamp) {
   var query = {
     "v": 3,
@@ -68,6 +94,28 @@ var getOyoProAggregatedQuery = function(address, type, appName, appUrl, beginTim
       }],
       "limit": 10000,
       "sort": {"satoshis": -1}
+    }
+  }
+  return query
+}
+var getOyoProListByTypeListAll = function(address, type, beginTimestamp, endTimestamp) {
+  var query = {
+    "v": 3,
+    "q": {
+      "aggregate": [{
+        "$match": getOyoProQuery(address, type, "", "", beginTimestamp, endTimestamp)
+      }, {
+        '$project': {
+          "out.s3": 1
+        }
+      }, {
+        "$group": {
+            "_id": {
+              "name": "$out.s3"
+            }
+        }
+      }],
+      "limit": 10000
     }
   }
   return query

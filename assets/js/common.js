@@ -111,8 +111,8 @@ function renderMoneybutton(address, amount, type, appName, appUrl, elementId) {
 }
 var getTypeRankings = function(address, type, beginTimestamp, endTimestamp) {
   return new Promise(function(resolve, reject) {
-    var query = getOyoProListByType(address, type, beginTimestamp, endTimestamp);
-    var b64 = btoa(JSON.stringify(query, null, 2));
+    var query = getOyoProListByTypeListAll(address, type, 0, endTimestamp);
+    var b64 = btoa(JSON.stringify(query));
 
     var url = window.neongenesisNode + b64;
     var header = { headers: { key: window.bitdbApiKey } };
@@ -120,7 +120,7 @@ var getTypeRankings = function(address, type, beginTimestamp, endTimestamp) {
       return res.json()
     }).then(function(res) {
         if (res.c !== undefined || res.u !== undefined) {
-          let items = []
+          var items = []
           if (res.c !== undefined) {
             items = items.concat(res.c)
           }
@@ -129,7 +129,6 @@ var getTypeRankings = function(address, type, beginTimestamp, endTimestamp) {
               let added = 0
               for (let j = 0; j < items.length; ++j) {
                 if (JSON.stringify(res.u[i]._id) === JSON.stringify(items[j]._id)) {
-                  items[j].satoshis += res.u[i].satoshis
                   added = 1
                 }
               }
@@ -139,7 +138,54 @@ var getTypeRankings = function(address, type, beginTimestamp, endTimestamp) {
               }
             }
           }
-          resolve(items)
+
+          for (let j = 0; j < items.length; ++j) {
+            items[j].satoshis = 0
+          }
+
+          var query = getOyoProListByType(address, type, beginTimestamp, endTimestamp);
+          var b64 = btoa(JSON.stringify(query));
+
+          var url = window.neongenesisNode + b64;
+          var header = { headers: { key: window.bitdbApiKey } };
+          fetch(url, header).then(function(res) {
+            return res.json()
+          }).then(function(res) {
+              if (res.c !== undefined || res.u !== undefined) {
+                if (res.c !== undefined) {
+                  for (let i = 0; i < res.c.length; ++i) {
+                    for (let j = 0; j < items.length; ++j) {
+                      if (JSON.stringify(res.c[i]._id) === JSON.stringify(items[j]._id)) {
+                        items[j].satoshis = res.c[i].satoshis
+                      }
+                    }
+                  }
+                }
+                if (res.u !== undefined) {
+                  for (let i = 0; i < res.u.length; ++i) {
+                    let added = 0
+                    for (let j = 0; j < items.length; ++j) {
+                      if (JSON.stringify(res.u[i]._id) === JSON.stringify(items[j]._id)) {
+                        items[j].satoshis += res.u[i].satoshis
+                        added = 1
+                      }
+                    }
+                    if (added === 0) {
+                      items = items.concat(res.u[i])
+                      added = 1
+                    }
+                  }
+                }
+              }
+              items = items.sort(function(a, b) {
+                return b.satoshis - a.satoshis;
+              });
+              resolve(items)
+          })
+          .catch(error => {
+            reject(error)
+            console.log(error)
+          })
         }
     })
     .catch(error => {
@@ -154,8 +200,8 @@ var getRankings = function(address, type, appName, appUrl, beginTimestamp, endTi
       return
     }
 
-    var query = getOyoProAggregatedQuery(address, type, appName, appUrl, beginTimestamp, endTimestamp);
-    var b64 = btoa(JSON.stringify(query, null, 2));
+    var query = getOyoProAggregatedQueryListAll(address, type, appName, appUrl, 0, endTimestamp);
+    var b64 = btoa(JSON.stringify(query));
 
     var url = window.neongenesisNode + b64;
     var header = { headers: { key: window.bitdbApiKey } };
@@ -163,7 +209,7 @@ var getRankings = function(address, type, appName, appUrl, beginTimestamp, endTi
       return res.json()
     }).then(function(res) {
         if (res.c !== undefined || res.u !== undefined) {
-          let items = []
+          var items = []
           if (res.c !== undefined) {
             items = items.concat(res.c)
           }
@@ -172,7 +218,6 @@ var getRankings = function(address, type, appName, appUrl, beginTimestamp, endTi
               let added = 0
               for (let j = 0; j < items.length; ++j) {
                 if (JSON.stringify(res.u[i]._id) === JSON.stringify(items[j]._id)) {
-                  items[j].satoshis += res.u[i].satoshis
                   added = 1
                 }
               }
@@ -182,7 +227,53 @@ var getRankings = function(address, type, appName, appUrl, beginTimestamp, endTi
               }
             }
           }
-          resolve(items)
+          for (let j = 0; j < items.length; ++j) {
+            items[j].satoshis = 0
+          }
+
+          var query = getOyoProAggregatedQuery(address, type, appName, appUrl, beginTimestamp, endTimestamp);
+          var b64 = btoa(JSON.stringify(query));
+
+          var url = window.neongenesisNode + b64;
+          var header = { headers: { key: window.bitdbApiKey } };
+          fetch(url, header).then(function(res) {
+            return res.json()
+          }).then(function(res) {
+              if (res.c !== undefined || res.u !== undefined) {
+                if (res.c !== undefined) {
+                  for (let i = 0; i < res.c.length; ++i) {
+                    for (let j = 0; j < items.length; ++j) {
+                      if (JSON.stringify(res.c[i]._id) === JSON.stringify(items[j]._id)) {
+                        items[j].satoshis = res.c[i].satoshis
+                      }
+                    }
+                  }
+                }
+                if (res.u !== undefined) {
+                  for (let i = 0; i < res.u.length; ++i) {
+                    let added = 0
+                    for (let j = 0; j < items.length; ++j) {
+                      if (JSON.stringify(res.u[i]._id) === JSON.stringify(items[j]._id)) {
+                        items[j].satoshis += res.u[i].satoshis
+                        added = 1
+                      }
+                    }
+                    if (added === 0) {
+                      items = items.concat(res.u[i])
+                      added = 1
+                    }
+                  }
+                }
+              }
+              items = items.sort(function(a, b) {
+                return b.satoshis - a.satoshis;
+              });
+              resolve(items)
+          })
+          .catch(error => {
+            reject(error)
+            console.log(error)
+          })
         }
     })
     .catch(error => {
