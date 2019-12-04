@@ -85,6 +85,10 @@
   document.getElementById('appNameInput').value = appName
   document.getElementById('appUrlInput').value = appUrl
 
+  if (type === "baseProtocol" || type === "mapApp") {
+    document.getElementById('appNameInputBlock').style.display = "block";
+  }
+
   var setVars = function() {
     type = document.getElementById('typeInput').value
     if (type === "default") {
