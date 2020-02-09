@@ -73,42 +73,6 @@ function dummyTxUrl(url) {
 function txHashInUrl(url) {
   return url.includes('{tx_hash}')
 }
-function renderMoneybutton(address, amount, type, appName, appUrl, elementId) {
-  var disabled = false
-  var label = "Bid"
-  if (appUrl === "") {
-    label = "Enter URL"
-    disabled = true
-  } else if (!validURL(dummyTxUrl(appUrl))) {
-    label = "Invalid URL"
-    disabled = true
-  } else if (!txHashInUrl(appUrl)) {
-    label = "{tx_hash} is missing"
-    disabled = true
-  } else if (type !== "default" && appName === "") {
-    label = "Enter app name"
-    disabled = true
-  }
-  var opReturnScript = bsv.Script.buildDataOut([address, type, appName, appUrl]).toASM()
-
-  const moneybuttonDiv = document.getElementById(elementId)
-  moneyButton.render(moneybuttonDiv, {
-    label: label,
-    disabled: disabled,
-    outputs: [
-    {
-      type: 'tip',
-      to: address,
-      currency: "USD",
-      amount: amount
-    }, {
-      type: 'SCRIPT',
-      script: opReturnScript,
-      amount: '0',
-      currency: 'BSV'
-    }]
-  })
-}
 var getTypeRankings = function(address, type, beginTimestamp, endTimestamp) {
   return new Promise(function(resolve, reject) {
     var query = getOyoProListByTypeListAll(address, type, 0, endTimestamp);

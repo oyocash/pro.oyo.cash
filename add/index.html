@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<script src="/assets/js/common.js"></script>
+<script src="/assets/js/common.js?090201"></script>
 <script src="/assets/js/oyoProProtocol.js"></script>
 <script src="https://www.moneybutton.com/moneybutton.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
@@ -100,6 +100,44 @@
     amount = document.getElementById('tipInput').value
 
     renderMoneybutton(address, amount, type, appName, appUrl, 'my-money-button')
+  }
+
+
+  function renderMoneybutton(address, amount, type, appName, appUrl, elementId) {
+    var disabled = false
+    var label = "Bid"
+    if (appUrl === "") {
+      label = "Enter URL"
+      disabled = true
+    } else if (!validURL(dummyTxUrl(appUrl))) {
+      label = "Invalid URL"
+      disabled = true
+    } else if (!txHashInUrl(appUrl)) {
+      label = "{tx_hash} is missing"
+      disabled = true
+    } else if (type !== "default" && appName === "") {
+      label = "Enter app name"
+      disabled = true
+    }
+    var opReturnScript = bsv.Script.buildDataOut([address, type, appName, appUrl]).toASM()
+
+    const moneybuttonDiv = document.getElementById(elementId)
+    moneyButton.render(moneybuttonDiv, {
+      label: label,
+      disabled: disabled,
+      outputs: [
+      {
+        type: 'tip',
+        to: address,
+        currency: "USD",
+        amount: amount
+      }, {
+        type: 'SCRIPT',
+        script: opReturnScript,
+        amount: '0',
+        currency: 'BSV'
+      }]
+    })
   }
 
   document.addEventListener("DOMContentLoaded", function() {
