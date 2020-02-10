@@ -120,7 +120,7 @@
       label = "Enter app name"
       disabled = true
     }
-    var opReturnScript = bsv.Script.buildDataOut([address, type, appName, appUrl]).toASM()
+    var opReturnScript = bsv.Script.buildSafeDataOut([address, type, appName, appUrl]).toASM()
 
     const moneybuttonDiv = document.getElementById(elementId)
     moneyButton.render(moneybuttonDiv, {
